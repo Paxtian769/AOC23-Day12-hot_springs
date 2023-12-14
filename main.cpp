@@ -2,8 +2,6 @@
 #include <fstream>
 #include <string>
 #include <list>
-#include <algorithm>
-#include <map>
 using namespace std;
 
 string get_pattern(string line, int &pos) {
@@ -125,7 +123,6 @@ int main(int argc, char **argv) {
         int periods_to_add = pattern.length() - baseLength;
 
         int validThisCycle=0;
-        map<string, bool> processedStrings;
         if (periods_to_add > 0) {
             list<string> testStrings = generateCombinations(hashStrings, periods_to_add, pattern);
             validArrangements += testStrings.size();
