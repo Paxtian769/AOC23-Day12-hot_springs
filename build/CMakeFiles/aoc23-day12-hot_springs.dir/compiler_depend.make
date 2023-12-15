@@ -194,37 +194,24 @@ CMakeFiles/aoc23-day12-hot_springs.dir/main.cpp.o: /home/brian/projects/AOC23-Da
   /usr/include/c++/12/bits/allocated_ptr.h \
   /usr/include/c++/12/ext/aligned_buffer.h \
   /usr/include/c++/12/bits/list.tcc \
-  /usr/include/c++/12/algorithm \
-  /usr/include/c++/12/bits/stl_algo.h \
-  /usr/include/c++/12/bits/algorithmfwd.h \
-  /usr/include/c++/12/bits/stl_heap.h \
-  /usr/include/c++/12/bits/stl_tempbuf.h \
-  /usr/include/c++/12/bits/uniform_int_dist.h \
-  /usr/include/c++/12/pstl/glue_algorithm_defs.h \
-  /usr/include/c++/12/pstl/execution_defs.h \
-  /usr/include/c++/12/map \
-  /usr/include/c++/12/bits/stl_tree.h \
-  /usr/include/c++/12/bits/node_handle.h \
-  /usr/include/c++/12/bits/stl_map.h \
+  /usr/include/c++/12/unordered_map \
+  /usr/include/c++/12/bits/hashtable.h \
+  /usr/include/c++/12/bits/hashtable_policy.h \
   /usr/include/c++/12/tuple \
   /usr/include/c++/12/bits/uses_allocator.h \
-  /usr/include/c++/12/bits/stl_multimap.h \
+  /usr/include/c++/12/bits/enable_special_members.h \
+  /usr/include/c++/12/bits/node_handle.h \
+  /usr/include/c++/12/bits/unordered_map.h \
   /usr/include/c++/12/bits/erase_if.h
 
 
 /usr/include/c++/12/bits/erase_if.h:
 
-/usr/include/c++/12/bits/stl_multimap.h:
+/usr/include/c++/12/bits/unordered_map.h:
 
-/usr/include/c++/12/pstl/glue_algorithm_defs.h:
+/usr/include/c++/12/bits/enable_special_members.h:
 
-/usr/include/c++/12/bits/stl_tempbuf.h:
-
-/usr/include/c++/12/bits/stl_heap.h:
-
-/usr/include/c++/12/bits/algorithmfwd.h:
-
-/usr/include/c++/12/bits/stl_algo.h:
+/usr/include/c++/12/unordered_map:
 
 /usr/include/c++/12/bits/list.tcc:
 
@@ -255,8 +242,6 @@ CMakeFiles/aoc23-day12-hot_springs.dir/main.cpp.o: /home/brian/projects/AOC23-Da
 /usr/include/c++/12/bits/ostream.tcc:
 
 /usr/include/c++/12/bits/locale_facets.h:
-
-/usr/include/c++/12/pstl/execution_defs.h:
 
 /usr/include/c++/12/bits/basic_ios.h:
 
@@ -293,6 +278,8 @@ CMakeFiles/aoc23-day12-hot_springs.dir/main.cpp.o: /home/brian/projects/AOC23-Da
 /usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
 
 /usr/include/x86_64-linux-gnu/bits/uintn-identity.h:
+
+/usr/include/c++/12/bits/hashtable.h:
 
 /usr/include/endian.h:
 
@@ -366,6 +353,8 @@ CMakeFiles/aoc23-day12-hot_springs.dir/main.cpp.o: /home/brian/projects/AOC23-Da
 
 /usr/include/x86_64-linux-gnu/bits/types/mbstate_t.h:
 
+/usr/include/c++/12/bits/hashtable_policy.h:
+
 /usr/include/x86_64-linux-gnu/bits/timesize.h:
 
 /usr/include/x86_64-linux-gnu/sys/select.h:
@@ -376,17 +365,11 @@ CMakeFiles/aoc23-day12-hot_springs.dir/main.cpp.o: /home/brian/projects/AOC23-Da
 
 /usr/include/c++/12/exception:
 
-/usr/include/c++/12/bits/uniform_int_dist.h:
-
 /usr/include/c++/12/bits/std_abs.h:
 
 /usr/include/c++/12/debug/assertions.h:
 
-/usr/include/c++/12/algorithm:
-
 /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h:
-
-/usr/include/c++/12/bits/stl_map.h:
 
 /usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
 
@@ -463,8 +446,6 @@ CMakeFiles/aoc23-day12-hot_springs.dir/main.cpp.o: /home/brian/projects/AOC23-Da
 /usr/include/wchar.h:
 
 /usr/include/c++/12/ostream:
-
-/usr/include/c++/12/bits/stl_tree.h:
 
 /usr/include/c++/12/ios:
 
@@ -565,8 +546,6 @@ CMakeFiles/aoc23-day12-hot_springs.dir/main.cpp.o: /home/brian/projects/AOC23-Da
 /usr/include/c++/12/string:
 
 /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h:
-
-/usr/include/c++/12/map:
 
 /usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h:
 
