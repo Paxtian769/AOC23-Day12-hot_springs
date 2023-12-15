@@ -16,9 +16,9 @@ string get_pattern(string line, int &pos) {
         pos++;
     }
     //Part 1
-    return pattern;
+    // return pattern;
     //Part 2
-    // return unfold_pattern(pattern);
+    return unfold_pattern(pattern);
 }
 
 bool isNum(char c) {
@@ -47,9 +47,9 @@ list<int> get_nums(string line, int &pos) {
         pos++;
     }
     // Part 1
-    return nums;
+    // return nums;
     // Part 2
-    // return unfoldedNums(nums);
+    return unfoldedNums(nums);
 }
 
 bool pattern_match(string pattern, string testString) {
@@ -89,21 +89,33 @@ bool is_match_at_pos(string pattern, string testString, int pos) {
 
 long generateCombinations(list<string> &hashStrings, list<string>::iterator currHashString, string pattern, string baseString, unordered_map<string, long> &memoMap) {
     long combinationsCount = 0;
-    // get how many more characters remain in the hash hashStrings
-    int chars_remain=0;
+    // get how many more characters remain in the list of hashStrings
+    int chars_remain = 0;
+    int remaining_symbols;
     list<string>::iterator it = currHashString;
-    it = currHashString;
-    it++;
-    while (it != hashStrings.end()) {
-        chars_remain += (*it).length();
-        it++;
+    if (currHashString == hashStrings.end()) {
+        remaining_symbols = 0;
     }
-    unordered_map<string, long>::iterator mapIt = memoMap.find(baseString);
+    else {
+        remaining_symbols = 1;
+        it = currHashString;
+        it++;
+        while (it != hashStrings.end()) {
+            remaining_symbols++;
+            chars_remain += (*it).length();
+            it++;
+        }
+    }
+    string remaining_pattern = "";
+    for (int pos = baseString.length(); pos < pattern.length(); pos++) {
+        remaining_pattern += pattern[pos];
+    }
+    string mapKey = remaining_pattern + to_string(remaining_symbols);
+    unordered_map<string, long>::iterator mapIt = memoMap.find(mapKey);
     if (mapIt != memoMap.end()) {
         combinationsCount = mapIt->second;
     }
     else {
-        list<string> combinations;
         if (currHashString == hashStrings.end()) {
             string newBaseString = baseString;
             while (newBaseString.length() < pattern.length()) {
@@ -132,7 +144,7 @@ long generateCombinations(list<string> &hashStrings, list<string>::iterator curr
                 }
             }
         }
-        memoMap.emplace(baseString, combinationsCount);
+        memoMap.emplace(mapKey, combinationsCount);
     }
 
     return combinationsCount;
@@ -142,8 +154,7 @@ int main(int argc, char **argv) {
     ifstream input_file;
     input_file.open("input.txt");
     string line;
-    int validArrangements = 0;
-    int rownum = 0;
+    unsigned long validArrangements = 0;
 
     while (getline(input_file, line)) {
         int pos=0;
