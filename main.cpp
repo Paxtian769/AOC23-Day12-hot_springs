@@ -87,20 +87,21 @@ bool is_match_at_pos(string pattern, string testString, int pos) {
     return isMatch;
 }
 
-list<string> generateCombinations(list<string> &hashStrings, list<string>::iterator currHashString, string pattern, string baseString, unordered_map<string, list<string>> &memoMap) {
-    list<string> combinations;
-    unordered_map<string, list<string>>::iterator mapIt = memoMap.find(baseString);
+long generateCombinations(list<string> &hashStrings, list<string>::iterator currHashString, string pattern, string baseString, unordered_map<string, long> &memoMap) {
+    long combinationsCount = 0;
+    unordered_map<string, long>::iterator mapIt = memoMap.find(baseString);
     if (mapIt != memoMap.end()) {
-        combinations = mapIt->second;
+        combinationsCount = mapIt->second;
     }
     else {
+        list<string> combinations;
         if (currHashString == hashStrings.end()) {
             string newBaseString = baseString;
             while (newBaseString.length() < pattern.length()) {
                 newBaseString+=".";
             }
             if (pattern_match(pattern, newBaseString)) {
-                combinations.push_back(newBaseString);
+                return 1;
             }
         }
         else {
@@ -114,32 +115,34 @@ list<string> generateCombinations(list<string> &hashStrings, list<string>::itera
             }
             // add periods to front of current hash string
             string currentString = *currHashString;
-            while (baseString.length() + currentString.length() + chars_remain <= pattern.length()) {
-                if (is_match_at_pos(pattern, currentString, baseString.length())) {
+            string addedPeriods = "";
+            bool addPeriod = true;
+            while (baseString.length() + addedPeriods.length() + currentString.length() + chars_remain <= pattern.length() && addPeriod) {
+                if (is_match_at_pos(pattern, (addedPeriods+currentString), baseString.length())) {
                     it = currHashString;
                     it++;
-                    mapIt = memoMap.find(baseString+currentString);
+                    mapIt = memoMap.find(baseString+(addedPeriods+currentString));
                     if (mapIt != memoMap.end()) {
-                        combinations.merge(mapIt->second);
+                        combinationsCount += mapIt->second;
                     }
                     else {
-                        combinations.merge(generateCombinations(hashStrings, it, pattern, baseString+currentString, memoMap));
-                        combinations.sort();
-                        combinations.unique();
+                        long roundCount = generateCombinations(hashStrings, it, pattern, baseString+addedPeriods+currentString, memoMap);
+                        memoMap.emplace(baseString+addedPeriods+currentString, roundCount);
+                        combinationsCount += roundCount;
                     }
                 }
-                currentString.insert(0, ".");
+                if (pattern[baseString.length()+addedPeriods.length()] == '#') {
+                    addPeriod=false;
+                }
+                else {
+                    addedPeriods.insert(0, ".");
+                }
             }
-
         }
-
-        combinations.sort();
-        combinations.unique();
-
-        memoMap.emplace(baseString, combinations);
+        memoMap.emplace(baseString, combinationsCount);
     }
 
-    return combinations;
+    return combinationsCount;
 }
 
 int main(int argc, char **argv) {
@@ -171,15 +174,15 @@ int main(int argc, char **argv) {
         }
         int periods_to_add = pattern.length() - baseLength;
 
-        unordered_map<string, list<string>> memoMap;
+        unordered_map<string, long> memoMap;
 
-        int validThisCycle=0;
+        long validThisCycle=0;
         if (periods_to_add > 0) {
             string baseString = "";
             list<string>::iterator currentHashString = hashStrings.begin();
-            list<string> testStrings = generateCombinations(hashStrings, currentHashString, pattern, baseString, memoMap);
-            validArrangements += testStrings.size();
-            validThisCycle = testStrings.size();
+            long testStrings = generateCombinations(hashStrings, currentHashString, pattern, baseString, memoMap);
+            validArrangements += testStrings;
+            validThisCycle = testStrings;
         }
 
         else {
