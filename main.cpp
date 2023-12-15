@@ -2,7 +2,12 @@
 #include <fstream>
 #include <string>
 #include <list>
+#include <unordered_map>
 using namespace std;
+
+string unfold_pattern(string pattern) {
+    return pattern+"?"+pattern+"?"+pattern+"?"+pattern+"?"+pattern;
+}
 
 string get_pattern(string line, int &pos) {
     string pattern = "";
@@ -10,11 +15,24 @@ string get_pattern(string line, int &pos) {
         pattern += line[pos];
         pos++;
     }
-    return pattern;
+    //Part 1
+    // return pattern;
+    //Part 2
+    return unfold_pattern(pattern);
 }
 
 bool isNum(char c) {
     return ('0' <= c && c <= '9');
+}
+
+list<int> unfoldedNums(list<int> nums) {
+    list<int> unfolded;
+    for (int i = 0; i < 5; i ++) {
+        for (list<int>::iterator numIt = nums.begin(); numIt != nums.end(); numIt++) {
+            unfolded.push_back(*numIt);
+        }
+    }
+    return unfolded;
 }
 
 list<int> get_nums(string line, int &pos) {
@@ -28,14 +46,22 @@ list<int> get_nums(string line, int &pos) {
         nums.push_back(currNum);
         pos++;
     }
-    return nums;
+    // Part 1
+    // return nums;
+    // Part 2
+    return unfoldedNums(nums);
 }
 
 bool pattern_match(string pattern, string testString) {
     bool isValid = true;
     if (testString.length() > 0) {
-        for (int i = 0; i < pattern.length() && i < testString.length() && isValid; i++) {
-            isValid = (pattern[i] == '?' || pattern[i] == testString[i]);
+        if (pattern.length() == testString.length()) {
+            for (int i = 0; i < pattern.length() && i < testString.length() && isValid; i++) {
+                isValid = (pattern[i] == '?' || pattern[i] == testString[i]);
+            }
+        }
+        else {
+            isValid = false;
         }
     }
     return isValid;
@@ -49,49 +75,67 @@ string build_hash_string(int n) {
     return hash_string;
 }
 
-list<string> generateCombinations(list<string> &words, int numPeriods, string pattern) {
-    list<string> combinations;
-    string testString;
-    if (numPeriods == 0) {
-        string newWord = "";
-        for (list<string>::iterator word = words.begin(); word != words.end(); word++) {
-            newWord += *word;
-        }
-        if (pattern_match(pattern, newWord)) {
-            combinations.push_back(newWord);
-        }
-    }
-    else {
-        string prefix = "";
-        for (list<string>::iterator currWord = words.begin(); currWord != words.end(); currWord++) {
-            list<string> wordCopy;
-            if (prefix.length() > 0) {
-                wordCopy.push_back(prefix);
-            }
-            if (pattern_match(pattern, prefix+".")) {
-                int pos = prefix.length();
-                bool valid = true;
-                for (list<string>::iterator copyWord = currWord; copyWord != words.end(); copyWord++) {
-                    if (copyWord == currWord) {
-                        wordCopy.push_back("."+*copyWord);
-                    }
-                    else {
-                        wordCopy.push_back(*copyWord);
-                    }
-                }
-                combinations.merge(generateCombinations(wordCopy, numPeriods-1, pattern));
-            }
-            prefix += *currWord;
-        }
-        if (prefix.length() + numPeriods <= pattern.length() && pattern_match(pattern, prefix)) {
-            list<string> wordCopy;
-            wordCopy.push_back(prefix+".");
-            combinations.merge(generateCombinations(wordCopy, numPeriods-1, pattern));
+bool is_match_at_pos(string pattern, string testString, int pos) {
+    bool isMatch = true;
+
+    if (pos+testString.length() < pattern.length()) {
+        for (int i = pos; i < pos+testString.length() && isMatch; i++) {
+            isMatch = (pattern[i] == '?' || pattern[i] == testString[i-pos]);
         }
     }
 
-    combinations.sort();
-    combinations.unique();
+    return isMatch;
+}
+
+list<string> generateCombinations(list<string> &hashStrings, list<string>::iterator currHashString, string pattern, string baseString, unordered_map<string, list<string>> &memoMap) {
+    list<string> combinations;
+    unordered_map<string, list<string>>::iterator mapIt = memoMap.find(baseString);
+    if (mapIt != memoMap.end()) {
+        combinations = mapIt->second;
+    }
+    else {
+        if (currHashString == hashStrings.end()) {
+            string newBaseString = baseString;
+            while (newBaseString.length() < pattern.length()) {
+                newBaseString+=".";
+            }
+            if (pattern_match(pattern, newBaseString)) {
+                combinations.push_back(newBaseString);
+            }
+        }
+        else {
+            // get how many more characters remain in the hash hashStrings
+            int chars_remain=0;
+            list<string>::iterator it = currHashString;
+            it++;
+            while (it != hashStrings.end()) {
+                chars_remain += (*it).length();
+                it++;
+            }
+            // add periods to front of current hash string
+            string currentString = *currHashString;
+            while (baseString.length() + currentString.length() + chars_remain <= pattern.length()) {
+                if (is_match_at_pos(pattern, currentString, baseString.length())) {
+                    it = currHashString;
+                    it++;
+                    mapIt = memoMap.find(baseString+currentString);
+                    if (mapIt != memoMap.end()) {
+                        combinations.merge(mapIt->second);
+                    }
+                    else {
+                        combinations.merge(generateCombinations(hashStrings, it, pattern, baseString+currentString, memoMap));
+                    }
+                }
+                currentString.insert(0, ".");
+            }
+
+        }
+
+        combinations.sort();
+        combinations.unique();
+
+        memoMap.emplace(baseString, combinations);
+    }
 
     return combinations;
 }
@@ -101,6 +145,7 @@ int main(int argc, char **argv) {
     input_file.open("input.txt");
     string line;
     int validArrangements = 0;
+    int rownum = 0;
 
     while (getline(input_file, line)) {
         int pos=0;
@@ -112,22 +157,29 @@ int main(int argc, char **argv) {
         int baseLength = 0;
         list<string> hashStrings;
         list<int>::iterator currNum = nums.begin();
-        hashStrings.push_back(build_hash_string(*currNum));
+        string currHashString = build_hash_string(*currNum);
+        hashStrings.push_back(currHashString);
         baseLength+=*currNum;
         currNum++;
         while (currNum != nums.end()) {
-            hashStrings.push_back("."+build_hash_string(*currNum));
+            currHashString = "."+build_hash_string(*currNum);
+            hashStrings.push_back(currHashString);
             baseLength+=*currNum+1;
             currNum++;
         }
         int periods_to_add = pattern.length() - baseLength;
 
+        unordered_map<string, list<string>> memoMap;
+
         int validThisCycle=0;
         if (periods_to_add > 0) {
-            list<string> testStrings = generateCombinations(hashStrings, periods_to_add, pattern);
+            string baseString = "";
+            list<string>::iterator currentHashString = hashStrings.begin();
+            list<string> testStrings = generateCombinations(hashStrings, currentHashString, pattern, baseString, memoMap);
             validArrangements += testStrings.size();
             validThisCycle = testStrings.size();
         }
+
         else {
             validThisCycle++;
             validArrangements++;
