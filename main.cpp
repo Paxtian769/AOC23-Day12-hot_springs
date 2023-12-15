@@ -124,6 +124,8 @@ list<string> generateCombinations(list<string> &hashStrings, list<string>::itera
                     }
                     else {
                         combinations.merge(generateCombinations(hashStrings, it, pattern, baseString+currentString, memoMap));
+                        combinations.sort();
+                        combinations.unique();
                     }
                 }
                 currentString.insert(0, ".");
