@@ -16,9 +16,9 @@ string get_pattern(string line, int &pos) {
         pos++;
     }
     //Part 1
-    // return pattern;
+    return pattern;
     //Part 2
-    return unfold_pattern(pattern);
+    // return unfold_pattern(pattern);
 }
 
 bool isNum(char c) {
@@ -47,9 +47,9 @@ list<int> get_nums(string line, int &pos) {
         pos++;
     }
     // Part 1
-    // return nums;
+    return nums;
     // Part 2
-    return unfoldedNums(nums);
+    // return unfoldedNums(nums);
 }
 
 bool pattern_match(string pattern, string testString) {
@@ -89,6 +89,15 @@ bool is_match_at_pos(string pattern, string testString, int pos) {
 
 long generateCombinations(list<string> &hashStrings, list<string>::iterator currHashString, string pattern, string baseString, unordered_map<string, long> &memoMap) {
     long combinationsCount = 0;
+    // get how many more characters remain in the hash hashStrings
+    int chars_remain=0;
+    list<string>::iterator it = currHashString;
+    it = currHashString;
+    it++;
+    while (it != hashStrings.end()) {
+        chars_remain += (*it).length();
+        it++;
+    }
     unordered_map<string, long>::iterator mapIt = memoMap.find(baseString);
     if (mapIt != memoMap.end()) {
         combinationsCount = mapIt->second;
@@ -105,31 +114,15 @@ long generateCombinations(list<string> &hashStrings, list<string>::iterator curr
             }
         }
         else {
-            // get how many more characters remain in the hash hashStrings
-            int chars_remain=0;
-            list<string>::iterator it = currHashString;
-            it++;
-            while (it != hashStrings.end()) {
-                chars_remain += (*it).length();
-                it++;
-            }
-            // add periods to front of current hash string
+            // add periods to front of current hash string and test remaining
             string currentString = *currHashString;
             string addedPeriods = "";
             bool addPeriod = true;
+            it = currHashString;
+            it++;
             while (baseString.length() + addedPeriods.length() + currentString.length() + chars_remain <= pattern.length() && addPeriod) {
                 if (is_match_at_pos(pattern, (addedPeriods+currentString), baseString.length())) {
-                    it = currHashString;
-                    it++;
-                    mapIt = memoMap.find(baseString+(addedPeriods+currentString));
-                    if (mapIt != memoMap.end()) {
-                        combinationsCount += mapIt->second;
-                    }
-                    else {
-                        long roundCount = generateCombinations(hashStrings, it, pattern, baseString+addedPeriods+currentString, memoMap);
-                        memoMap.emplace(baseString+addedPeriods+currentString, roundCount);
-                        combinationsCount += roundCount;
-                    }
+                    combinationsCount += generateCombinations(hashStrings, it, pattern, baseString+addedPeriods+currentString, memoMap);
                 }
                 if (pattern[baseString.length()+addedPeriods.length()] == '#') {
                     addPeriod=false;
